@@ -1,15 +1,28 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const dotenvWebpack = require('dotenv-webpack');
+
 
 module.exports = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    publicPath : '/',
     },
     resolve: {
-      extensions: ['.js', '.jsx']
+      extensions: ['.js', '.jsx'],
+      alias: {
+            '@assets': path.resolve(__dirname, 'src/assets/'),
+            '@components': path.resolve(__dirname, 'src/components/'),
+            '@containers': path.resolve(__dirname, 'src/containers/'),
+            '@styles': path.resolve(__dirname, 'src/styles/'),
+            '@pages': path.resolve(__dirname, 'src/pages/'),
+            '@routes': path.resolve(__dirname, 'src/routes/'),
+            '@hooks': path.resolve(__dirname, 'src/hooks/'),
+            '@context': path.resolve(__dirname, 'src/context/'),
+        }
     },
     mode: 'development',
     module: {
@@ -19,7 +32,7 @@ module.exports = {
                 exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
-                }
+                },
             },
             {
                 test: /\.html$/,
@@ -36,8 +49,15 @@ module.exports = {
                     'css-loader',
                     'sass-loader',
                 ],
-            }
-        ]
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                type: 'assets',
+                use: [
+                    'file-loader',
+                ],
+            },
+        ],
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -46,13 +66,13 @@ module.exports = {
         }),
         new MiniCssExtractPlugin({
             filename: '[name].css',
-        })
+        }),
+        new dotenvWebpack(),
     ],
     devServer: {
+        historyApiFallback: true,
         static: path.join(__dirname, 'dist'),
         compress: true,
         port: 9000
-    }
+    },
 };
-
-
